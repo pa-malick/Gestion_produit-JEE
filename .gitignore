@@ -1,0 +1,23 @@
+target/
+
+# Postman (mode local)
+.postman/
+postman/collections/
+postman/documents/
+postman/environments/
+postman/flows/
+postman/globals/
+postman/mocks/
+postman/specs/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Fichiers temporaires Word
+~$*
+.docx
+
+# Rapport (envoyé à part)
+*.docx

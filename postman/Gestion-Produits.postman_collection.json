@@ -1,0 +1,631 @@
+{
+	"info": {
+		"name": "Gestion des Produits",
+		"description": "Mini-projet JEE - API REST de gestion des produits (Spring Boot + PostgreSQL). Definir la variable baseUrl sur http://localhost:8080 avant de lancer la collection.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "produitId",
+			"value": ""
+		}
+	],
+	"item": [
+		{
+			"name": "1 - CRUD",
+			"item": [
+				{
+					"name": "Creer un produit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Statut 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Le produit a un identifiant\", function () {",
+									"    var produit = pm.response.json();",
+									"    pm.expect(produit.id).to.be.a(\"number\");",
+									"    pm.collectionVariables.set(\"produitId\", produit.id);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nom\": \"Onduleur 650 VA\",\n    \"categorie\": \"Informatique\",\n    \"prix\": 65000.00,\n    \"quantite\": 8\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/produits",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"produits"
+							]
+						}
+					}
+				},
+				{
+					"name": "Lister tous les produits",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Statut 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"La reponse est une liste\", function () {",
+									"    pm.expect(pm.response.json()).to.be.an(\"array\");",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/produits",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"produits"
+							]
+						}
+					}
+				},
+				{
+					"name": "Consulter un produit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Statut 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"La valeur du stock est calculee\", function () {",
+									"    var produit = pm.response.json();",
+									"    pm.expect(produit.valeurStock).to.eql(produit.prix * produit.quantite);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/produits/{{produitId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"produits",
+								"{{produitId}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Modifier un produit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Statut 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"La quantite est passee a 20\", function () {",
+									"    pm.expect(pm.response.json().quantite).to.eql(20);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nom\": \"Onduleur 650 VA\",\n    \"categorie\": \"Informatique\",\n    \"prix\": 62000.00,\n    \"quantite\": 20\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/produits/{{produitId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"produits",
+								"{{produitId}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Supprimer un produit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Statut 204\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/produits/{{produitId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"produits",
+								"{{produitId}}"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2 - Recherches",
+			"item": [
+				{
+					"name": "Par categorie",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Statut 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Tous les produits sont de la categorie demandee\", function () {",
+									"    pm.response.json().forEach(function (p) {",
+									"        pm.expect(p.categorie.toLowerCase()).to.eql(\"informatique\");",
+									"    });",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/produits/categorie/Informatique",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"produits",
+								"categorie",
+								"Informatique"
+							]
+						}
+					}
+				},
+				{
+					"name": "Par nom",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Statut 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Le nom contient le mot cherche\", function () {",
+									"    pm.response.json().forEach(function (p) {",
+									"        pm.expect(p.nom.toLowerCase()).to.include(\"sou\");",
+									"    });",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/produits/recherche?nom=sou",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"produits",
+								"recherche"
+							],
+							"query": [
+								{
+									"key": "nom",
+									"value": "sou"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Stock faible",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Statut 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Toutes les quantites sont sous le seuil\", function () {",
+									"    pm.response.json().forEach(function (p) {",
+									"        pm.expect(p.quantite).to.be.below(5);",
+									"    });",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/produits/stock-faible?seuil=5",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"produits",
+								"stock-faible"
+							],
+							"query": [
+								{
+									"key": "seuil",
+									"value": "5"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Plage de prix",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Statut 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Les prix sont dans la plage demandee\", function () {",
+									"    pm.response.json().forEach(function (p) {",
+									"        pm.expect(p.prix).to.be.within(10000, 60000);",
+									"    });",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/produits/prix?min=10000&max=60000",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"produits",
+								"prix"
+							],
+							"query": [
+								{
+									"key": "min",
+									"value": "10000"
+								},
+								{
+									"key": "max",
+									"value": "60000"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Liste des categories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Statut 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/produits/categories",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"produits",
+								"categories"
+							]
+						}
+					}
+				},
+				{
+					"name": "Valeur du stock par categorie",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Statut 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/produits/valeur-stock?categorie=Informatique",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"produits",
+								"valeur-stock"
+							],
+							"query": [
+								{
+									"key": "categorie",
+									"value": "Informatique"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3 - Cas d erreur",
+			"item": [
+				{
+					"name": "Produit inexistant (404)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Statut 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"pm.test(\"Le message d erreur est renseigne\", function () {",
+									"    pm.expect(pm.response.json().message).to.be.a(\"string\");",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/produits/9999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"produits",
+								"9999"
+							]
+						}
+					}
+				},
+				{
+					"name": "Donnees invalides (400)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Statut 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"pm.test(\"Le detail des champs fautifs est renvoye\", function () {",
+									"    pm.expect(pm.response.json()).to.have.property(\"erreurs\");",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nom\": \"\",\n    \"categorie\": \"\",\n    \"prix\": -100,\n    \"quantite\": -3\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/produits",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"produits"
+							]
+						}
+					}
+				},
+				{
+					"name": "Nom deja utilise (409)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Statut 409\", function () {",
+									"    pm.response.to.have.status(409);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nom\": \"Souris sans fil\",\n    \"categorie\": \"Informatique\",\n    \"prix\": 9000.00,\n    \"quantite\": 30\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/produits",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"produits"
+							]
+						}
+					}
+				},
+				{
+					"name": "Plage de prix incoherente (400)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Statut 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/produits/prix?min=90000&max=1000",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"produits",
+								"prix"
+							],
+							"query": [
+								{
+									"key": "min",
+									"value": "90000"
+								},
+								{
+									"key": "max",
+									"value": "1000"
+								}
+							]
+						}
+					}
+				}
+			]
+		}
+	]
+}
